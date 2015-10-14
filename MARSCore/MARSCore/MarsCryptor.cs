@@ -170,7 +170,6 @@ namespace MARSCore
                     tmp[i] = tmp[i] ^ (LeftRotation(tmp[MathMod(i - 7, tmpLength)] ^ tmp[MathMod(i - 2, tmpLength)], 3)) ^ (uint)(4*i + j);
                 }
 
-                //TODO: move this to function
                 for (int k = 0; k < 4; k++)
                 {
                     for (int i = 0; i < tmpLength; i++)
@@ -302,7 +301,42 @@ namespace MARSCore
 
         private void Cryptotransformation(uint[] workData, int i)
         {
-            throw new NotImplementedException();
+            uint[] eOut = Efunction(workData[0], _expandedKey[2*i + 4], _expandedKey[2*i + 5]);
+
+            workData[0] = LeftRotation(workData[0], 13);
+            workData[2] += eOut[1];
+            if (i < 8)
+            {
+                workData[1] += eOut[0];
+                workData[3] ^= eOut[2];
+            }
+            else
+            {
+                workData[3] += eOut[0];
+                workData[1] ^= eOut[2];
+            }
+
+            var tmp = (uint[])workData.Clone();
+            Array.Copy(tmp, 1, workData, 0, 3);
+            workData[3] = tmp[0];
+        }
+
+        private uint[] Efunction(uint data, uint key1, uint key2)
+        {
+            var m = data + key1;
+            var r = LeftRotation(data, 13)*key2;
+            var i = m & 511;
+            var l = S[i];
+            r = LeftRotation(r, 5);
+            var k = r & 31;
+            m = LeftRotation(m, (int)k);
+            l ^= r;
+            r = LeftRotation(r, 5);
+            l ^= r;
+            k = r & 31;
+            l = LeftRotation(l, (int) k);
+
+            return new[] {l, m, r};
         }
 
         private void DirectMixing(uint[] workData, int number)

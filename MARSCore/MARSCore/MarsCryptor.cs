@@ -133,7 +133,8 @@ namespace MARSCore
             0xabb96061, 0x5370f85d, 0xffb07e37, 0xda30d0fb,
             0xebc977b6, 0x0b98b40f, 0x3a4d0fe6, 0xdf4fc26b,
             0x159cf22a, 0xc298d6e2, 0x2b78ef6a, 0x61a94ac0,
-            0xab561187, 0x14eea0f0, 0xdf0d4164, 0x19af70ee
+            0xab561187, 0x14eea0f0, 0xdf0d4164, 0x19af70ee
+
         };
 
         private const int BlockSize = 4;
@@ -181,18 +182,39 @@ namespace MARSCore
             }
             
             for (int i = BlockSize; i < 40 - BlockSize; i += 2)
-                _expandedKey[i] = FixSubkey(_expandedKey[i], _expandedKey[i + 3]);
+                _expandedKey[i] = FixSubkey(_expandedKey[i], _expandedKey[i + 3]);      //from IBM implementation... why [i+3]??? try [i-1] instead of [i+3]
         }
 
         private uint FixSubkey(uint k, uint r)
         {
+            uint m1, m2;
             uint[] b = {0xa4a8d57b, 0x5b5d193b, 0xc8a8309b, 0x73f9a978};
             uint j = k & 3;
             k |= 3;
 
+            m1 = (~k) ^ (k << 1);       //если соседние биты совпадают, ставится 1
+            m2 = m1 & (m1 << 1);        //сокращаем последовательности 1 на 1
+            m2 &= m2 << 2;              //еще на 2
+            m2 &= m2 << 4;              //еще на 4
+            //итого: последовательности 1 в m1 сокращены на 7, т.е. отсеяны все последовательности в k длиной меньше 9
+            //отсеиваем последовательности длиной 9
+            m2 &= m1 << 8;              
+            m2 &= 0xfffffe00;           //на всякий случай занулим последние 9 бит (хотя они один фиг должны получиться 0)
 
+            //если получился 0, то править ничего не надо
+            if (m2 == 0)
+                return k;
 
-            throw new NotImplementedException();
+            //строим маску: на месте последовательностей одинаковых бит длины 10+ ставим 1 
+            m1 = m2 | (m2 >> 1);
+            m1 |= m1 >> 2;       
+            m1 |= m2 >> 4;
+            m1 |= m1 >> 5;
+            //сбрасываем граничные биты последовательностей в 0
+            m1 &= ((~k) ^ (k << 1)) & ((~k) ^ (k >> 1)) & 0x7ffffffc;
+
+            k ^= LeftRotation(b[j], (int) (r & 31)) & m1; //low 5 bit mask = 31
+            return k;
         }
 
         private uint LeftRotation(uint u, int count)

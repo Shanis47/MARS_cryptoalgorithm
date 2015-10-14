@@ -174,7 +174,7 @@ namespace MARSCore
                 for (int k = 0; k < 4; k++)
                 {
                     for (int i = 0; i < tmpLength; i++)
-                        tmp[i] = LeftRotation(tmp[i] + S[tmp[MathMod(i - 1, tmpLength)] & 1023], 9); //low 9 bit mask = 1023
+                        tmp[i] = LeftRotation(tmp[i] + S[tmp[MathMod(i - 1, tmpLength)] & 511], 9); //low 9 bit mask = 511
                 }
 
                 for (int i = 0; i < 10; i++)
@@ -229,6 +229,19 @@ namespace MARSCore
             return (u << count) | ((u & mask) >> (32 - count));
         }
 
+        private uint RightRotation(uint u, int count)
+        {
+            var binValue = new StringBuilder(string.Empty);
+            for (int i = 0; i < count; i++)
+                binValue.Append("0");
+            for (int i = 0; i < 32 - count; i++)
+                binValue.Append("1");
+            uint mask = Convert.ToUInt32(binValue.ToString(), 2);
+
+            return (u >> count) | ((u & mask) << (32 - count));
+        }
+
+
         public uint[] Encrypt(uint[] data)
         {
             var result = new uint[(data.Length / BlockSize + 1) * BlockSize];
@@ -254,7 +267,7 @@ namespace MARSCore
 
             //8 раундов прямого перемешивания без ключа
             for (int i = 0; i < 8; i++)
-                DirectMixing(workData);
+                DirectMixing(workData, i);
 
             //8 раундов прямого и 8 обратного криптопреобразования
             for (int i = 0; i < 16; i++)
@@ -262,14 +275,29 @@ namespace MARSCore
 
             //8 раундов обратного перемешивания
             for (int i = 0; i < 8; i++)
-                ReverseMixing(workData);
+                ReverseMixing(workData, i);
 
             return workData;
         }
 
-        private void ReverseMixing(uint[] workData)
+        private void ReverseMixing(uint[] workData, int number)
         {
-            throw new NotImplementedException();
+            if (number == 2 || number == 6)
+                workData[0] -= workData[3];
+            if (number == 3 || number == 7)
+                workData[0] -= workData[1];
+
+            workData[1] ^= S[256 + (workData[0] & 255)];
+            workData[2] -= S[workData[0] & (255 << 24)];
+            //тут википедия и IBM реализации расходятся, пойдем по пути IBM
+            workData[3] -= S[256 + (workData[0] & (255 << 16))];
+            workData[3] ^= S[workData[0] & (255 << 8)];
+
+            workData[0] = LeftRotation(workData[0], 24);
+
+            var tmp = (uint[])workData.Clone();
+            Array.Copy(tmp, 0, workData, 1, 3);
+            workData[0] = tmp[3];
         }
 
         private void Cryptotransformation(uint[] workData, int i)
@@ -277,9 +305,23 @@ namespace MARSCore
             throw new NotImplementedException();
         }
 
-        private void DirectMixing(uint[] workData)
+        private void DirectMixing(uint[] workData, int number)
         {
-            throw new NotImplementedException();
+            //S0=S[:256]; S1=S[256:]
+            workData[1] = workData[1] ^ S[workData[0] & 255];
+            workData[1] = workData[1] + S[256 + (workData[0] & (255 << 8))];
+            workData[2] = workData[2] + S[workData[0] & (255 << 16)];
+            workData[3] = workData[3] ^ S[256 + (workData[0] & (255 << 24))];
+
+            workData[0] = RightRotation(workData[0], 24);
+            if (number == 0 || number == 4)
+                workData[0] += workData[3];
+            if (number == 1 || number == 5)
+                workData[0] += workData[1];
+
+            var tmp = (uint [])workData.Clone();
+            Array.Copy(tmp, 1, workData, 0, 3);
+            workData[3] = tmp[0];
         }
 
         public uint[] Decript(uint[] data)

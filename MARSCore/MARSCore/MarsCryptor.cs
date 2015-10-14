@@ -298,8 +298,8 @@ namespace MARSCore
             workData[0] = LeftRotation(workData[0], 24);
 
             var tmp = (uint[])workData.Clone();
-            Array.Copy(tmp, 0, workData, 1, 3);
-            workData[0] = tmp[3];
+            Array.Copy(tmp, 1, workData, 0, 3);
+            workData[3] = tmp[0];
         }
 
         private void EnCryptotransformation(uint[] workData, int i)
@@ -378,7 +378,87 @@ namespace MARSCore
 
         private uint[] DecryptBlock(uint[] block)
         {
-            throw new NotImplementedException();
+            var workData = new uint[BlockSize];
+            Array.Copy(block, workData, BlockSize);
+            //начальное наложение ключа
+            for (int i = 0; i < BlockSize; i++)
+                workData[i] += _expandedKey[36+i];
+
+            //TODO: chane to decription
+            //8 раундов прямого перемешивания без ключа
+            for (int i = 0; i < 8; i++)
+                DeDirectMixing(workData, i);
+
+            //8 раундов прямого и 8 обратного криптопреобразования
+            for (int i = 0; i < 16; i++)
+                DeCryptotransformation(workData, i);
+
+            //8 раундов обратного перемешивания
+            for (int i = 0; i < 8; i++)
+                DeReverseMixing(workData, i);
+
+            for (int i = 0; i < 4; i++)
+                workData[i] -= _expandedKey[i];
+
+            return workData;
+        }
+
+        private void DeReverseMixing(uint[] workData, int i)
+        {
+            var tmp = (uint[])workData.Clone();
+            Array.Copy(tmp, 0, workData, 1, 3);
+            workData[0] = tmp[3];
+
+            if (i == 0 || i == 4)
+                workData[0] -= workData[3];
+            if (i == 1 || i == 5)
+                workData[0] -= workData[1];
+
+            workData[0] = LeftRotation(workData[0], 24);
+            workData[3] ^= S[256 + ((workData[0] >> 24) & 255)];
+            workData[2] -= S[(workData[0] >> 16) & 255];
+            workData[1] -= S[256 + ((workData[0] >> 8) & 255)];
+            workData[1] ^= S[workData[0] & 255];
+        }
+
+        private void DeCryptotransformation(uint[] workData, int i)
+        {
+            var tmp = (uint[])workData.Clone();
+            Array.Copy(tmp, 0, workData, 1, 3);
+            workData[0] = tmp[3];
+
+            workData[0] = RightRotation(workData[0], 13);
+            var eOut = Efunction(workData[0], _expandedKey[2*i + 4], _expandedKey[2*i + 5]);
+            workData[2] -= eOut[1];
+
+            if (i < 8)
+            {
+                workData[1] -= eOut[0];
+                workData[3] ^= eOut[2];
+            }
+            else
+            {
+                workData[3] -= eOut[0];
+                workData[1] ^= eOut[2];
+            }
+        }
+
+        private void DeDirectMixing(uint[] workData, int i)
+        {
+            var tmp = (uint[])workData.Clone();
+            Array.Copy(tmp, 0, workData, 1, 3);
+            workData[0] = tmp[3];
+
+            workData[0] = RightRotation(workData[0], 24);
+            workData[3] ^= S[(workData[0] >> 8) & 255];
+            workData[3] += S[256 + ((workData[0] >> 16) & 255)];
+            workData[2] += S[(workData[0] >> 24) & 255];
+            workData[1] ^= S[256 + (workData[0] & 255)];
+
+            if (i == 2 || i == 6)
+                workData[0] += workData[3];
+            if (i == 3 || i == 7)
+                workData[0] += workData[1];
         }
 
         private int MathMod(int a, int b)

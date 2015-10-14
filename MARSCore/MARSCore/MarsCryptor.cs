@@ -258,27 +258,52 @@ namespace MARSCore
 
         private uint[] EncryptBlock(uint[] block)
         {
+            var logger = new Logger();
+            logger.OpenLog("Encryption.log");
+            
             var workData = new uint[BlockSize];
             Array.Copy(block, workData, BlockSize);
+
+            logger.Log("Base data");
+            logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"),workData[2].ToString("X"), workData[3].ToString("X")));
+
             //начальное наложение ключа
             for (int i = 0; i < BlockSize; i++)
                 workData[i] += _expandedKey[i];
+            logger.Log("After first key adding");
+            logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));
 
+            logger.Log("Direct mixing");
             //8 раундов прямого перемешивания без ключа
             for (int i = 0; i < 8; i++)
+            {
                 EnDirectMixing(workData, i);
+                logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));
+            }
 
+            logger.Log("cryptotransformations");
             //8 раундов прямого и 8 обратного криптопреобразования
             for (int i = 0; i < 16; i++)
+            {
                 EnCryptotransformation(workData, i);
+                logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));
+            }
 
+            logger.Log("reverce mixing");
             //8 раундов обратного перемешивания
             for (int i = 0; i < 8; i++)
+            {
                 EnReverseMixing(workData, i);
+                logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));
+            }
 
             for (int i = 0; i < BlockSize; i++)
                 workData[i] -= _expandedKey[36 + i];
 
+            logger.Log("final key adding");
+            logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));
+
+            logger.CloseLog();
             return workData;
         }
 
@@ -378,28 +403,51 @@ namespace MARSCore
 
         private uint[] DecryptBlock(uint[] block)
         {
+            var logger = new Logger();
+            logger.OpenLog("Decryption.log");
+
             var workData = new uint[BlockSize];
             Array.Copy(block, workData, BlockSize);
+
+            logger.Log("Base data");
+            logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));
+
             //начальное наложение ключа
             for (int i = 0; i < BlockSize; i++)
                 workData[i] += _expandedKey[36+i];
+            logger.Log("After first key adding");
+            logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));
 
-            //TODO: chane to decription
+            logger.Log("Direct mixing");
             //8 раундов прямого перемешивания без ключа
             for (int i = 0; i < 8; i++)
+            {
                 DeDirectMixing(workData, i);
+                logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));
+            }
 
+            logger.Log("cryptotransformations");
             //8 раундов прямого и 8 обратного криптопреобразования
             for (int i = 0; i < 16; i++)
+            {
                 DeCryptotransformation(workData, i);
+                logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));
+            }
 
+            logger.Log("reverce mixing");
             //8 раундов обратного перемешивания
             for (int i = 0; i < 8; i++)
+            {
                 DeReverseMixing(workData, i);
+                logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));
+            }
 
             for (int i = 0; i < 4; i++)
                 workData[i] -= _expandedKey[i];
+            logger.Log("final key adding");
+            logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));
 
+            logger.CloseLog();
             return workData;
         }
 

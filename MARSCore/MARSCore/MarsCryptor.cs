@@ -266,20 +266,23 @@ namespace MARSCore
 
             //8 раундов прямого перемешивания без ключа
             for (int i = 0; i < 8; i++)
-                DirectMixing(workData, i);
+                EnDirectMixing(workData, i);
 
             //8 раундов прямого и 8 обратного криптопреобразования
             for (int i = 0; i < 16; i++)
-                Cryptotransformation(workData, i);
+                EnCryptotransformation(workData, i);
 
             //8 раундов обратного перемешивания
             for (int i = 0; i < 8; i++)
-                ReverseMixing(workData, i);
+                EnReverseMixing(workData, i);
+
+            for (int i = 0; i < BlockSize; i++)
+                workData[i] -= _expandedKey[36 + i];
 
             return workData;
         }
 
-        private void ReverseMixing(uint[] workData, int number)
+        private void EnReverseMixing(uint[] workData, int number)
         {
             if (number == 2 || number == 6)
                 workData[0] -= workData[3];
@@ -299,7 +302,7 @@ namespace MARSCore
             workData[0] = tmp[3];
         }
 
-        private void Cryptotransformation(uint[] workData, int i)
+        private void EnCryptotransformation(uint[] workData, int i)
         {
             uint[] eOut = Efunction(workData[0], _expandedKey[2*i + 4], _expandedKey[2*i + 5]);
 
@@ -339,7 +342,7 @@ namespace MARSCore
             return new[] {l, m, r};
         }
 
-        private void DirectMixing(uint[] workData, int number)
+        private void EnDirectMixing(uint[] workData, int number)
         {
             //S0=S[:256]; S1=S[256:]
             workData[1] = workData[1] ^ S[workData[0] & 255];

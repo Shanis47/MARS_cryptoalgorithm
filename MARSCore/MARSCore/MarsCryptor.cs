@@ -218,36 +218,22 @@ namespace MARSCore
 
         private uint LeftRotation(uint u, int count)
         {
-            var binValue = new StringBuilder(string.Empty);
-            for (int i = 0; i < count; i++)
-                binValue.Append("1");
-            for (int i = 0; i < 32 - count; i++)
-                binValue.Append("0");
-            uint mask = Convert.ToUInt32(binValue.ToString(), 2);
-
-            return (u << count) | ((u & mask) >> (32 - count));
+            return (u << count) | (u >> (32 - count));
         }
 
         private uint RightRotation(uint u, int count)
         {
-            var binValue = new StringBuilder(string.Empty);
-            for (int i = 0; i < count; i++)
-                binValue.Append("0");
-            for (int i = 0; i < 32 - count; i++)
-                binValue.Append("1");
-            uint mask = Convert.ToUInt32(binValue.ToString(), 2);
-
-            return (u >> count) | ((u & mask) << (32 - count));
+            return (u >> count) | (u << (32 - count));
         }
 
 
         public uint[] Encrypt(uint[] data)
         {
-            var result = new uint[(data.Length / BlockSize + 1) * BlockSize];
+            var result = new uint[data.Length];
             var block = new uint[BlockSize];
             for (int i = 0; i < data.Length; i += BlockSize)
             {
-                Array.Copy(data, i, block, 0, i+BlockSize < data.Length? BlockSize: data.Length-i-1);
+                Array.Copy(data, i, block, 0, i+BlockSize < data.Length? BlockSize: data.Length-i);
                 block = EncryptBlock(block);
                 Array.Copy(block, 0, result, i, BlockSize);
                 Array.Clear(block, 0, BlockSize);
@@ -316,9 +302,8 @@ namespace MARSCore
 
             workData[1] ^= S[256 + (workData[0] & 255)];
             workData[2] -= S[(workData[0] >> 24) & 255];
-            //тут википедия и IBM реализации расходятся, пойдем по пути IBM
-            workData[3] -= S[256 + ((workData[0] >> 16) & 255)];
-            workData[3] ^= S[(workData[0] >> 8) & 255];
+            workData[3] -= S[(workData[0] >> 8) & 255];
+            workData[3] ^= S[256 + ((workData[0] >> 16) & 255)];
 
             workData[0] = LeftRotation(workData[0], 24);
 
@@ -388,11 +373,11 @@ namespace MARSCore
 
         public uint[] Decript(uint[] data)
         {
-            var result = new uint[(data.Length / BlockSize + 1) * BlockSize];
+            var result = new uint[data.Length];
             var block = new uint[BlockSize];
             for (int i = 0; i < data.Length; i += BlockSize)
             {
-                Array.Copy(data, i, block, 0, i + BlockSize < data.Length ? BlockSize : data.Length - i - 1);
+                Array.Copy(data, i, block, 0, i + BlockSize < data.Length ? BlockSize : data.Length - i);
                 block = DecryptBlock(block);
                 Array.Copy(block, 0, result, i, BlockSize);
                 Array.Clear(block, 0, BlockSize);
@@ -498,8 +483,9 @@ namespace MARSCore
             workData[0] = tmp[3];
 
             workData[0] = RightRotation(workData[0], 24);
-            workData[3] ^= S[(workData[0] >> 8) & 255];
-            workData[3] += S[256 + ((workData[0] >> 16) & 255)];
+
+            workData[3] ^= S[256 + ((workData[0] >> 16) & 255)];
+            workData[3] += S[(workData[0] >> 8) & 255];
             workData[2] += S[(workData[0] >> 24) & 255];
             workData[1] ^= S[256 + (workData[0] & 255)];
 

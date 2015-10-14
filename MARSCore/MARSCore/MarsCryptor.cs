@@ -246,6 +246,39 @@ namespace MARSCore
 
         private uint[] EncryptBlock(uint[] block)
         {
+            var workData = new uint[BlockSize];
+            Array.Copy(block, workData, BlockSize);
+            //начальное наложение ключа
+            for (int i = 0; i < BlockSize; i++)
+                workData[i] += _expandedKey[i];
+
+            //8 раундов прямого перемешивания без ключа
+            for (int i = 0; i < 8; i++)
+                DirectMixing(workData);
+
+            //8 раундов прямого и 8 обратного криптопреобразования
+            for (int i = 0; i < 16; i++)
+                Cryptotransformation(workData, i);
+
+            //8 раундов обратного перемешивания
+            for (int i = 0; i < 8; i++)
+                ReverseMixing(workData);
+
+            return workData;
+        }
+
+        private void ReverseMixing(uint[] workData)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Cryptotransformation(uint[] workData, int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void DirectMixing(uint[] workData)
+        {
             throw new NotImplementedException();
         }
 

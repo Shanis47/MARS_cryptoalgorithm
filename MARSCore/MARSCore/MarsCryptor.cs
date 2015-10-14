@@ -290,10 +290,10 @@ namespace MARSCore
                 workData[0] -= workData[1];
 
             workData[1] ^= S[256 + (workData[0] & 255)];
-            workData[2] -= S[workData[0] & (255 << 24)];
+            workData[2] -= S[(workData[0] >> 24) & 255];
             //тут википедия и IBM реализации расходятся, пойдем по пути IBM
-            workData[3] -= S[256 + (workData[0] & (255 << 16))];
-            workData[3] ^= S[workData[0] & (255 << 8)];
+            workData[3] -= S[256 + ((workData[0] >> 16) & 255)];
+            workData[3] ^= S[(workData[0] >> 8) & 255];
 
             workData[0] = LeftRotation(workData[0], 24);
 
@@ -346,9 +346,9 @@ namespace MARSCore
         {
             //S0=S[:256]; S1=S[256:]
             workData[1] = workData[1] ^ S[workData[0] & 255];
-            workData[1] = workData[1] + S[256 + (workData[0] & (255 << 8))];
-            workData[2] = workData[2] + S[workData[0] & (255 << 16)];
-            workData[3] = workData[3] ^ S[256 + (workData[0] & (255 << 24))];
+            workData[1] = workData[1] + S[256 + ((workData[0] >> 8) & 255)];
+            workData[2] = workData[2] + S[(workData[0] >> 16) & 255];
+            workData[3] = workData[3] ^ S[256 + ((workData[0] >> 24)  & 255)];
 
             workData[0] = RightRotation(workData[0], 24);
             if (number == 0 || number == 4)

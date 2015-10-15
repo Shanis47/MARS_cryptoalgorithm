@@ -405,7 +405,7 @@ namespace MARSCore
 
             logger.Log("Direct mixing");
             //8 раундов прямого перемешивания без ключа
-            for (int i = 0; i < 8; i++)
+            for (int i = 7; i >= 0; i--)
             {
                 DeDirectMixing(workData, i);
                 logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));
@@ -413,7 +413,7 @@ namespace MARSCore
 
             logger.Log("cryptotransformations");
             //8 раундов прямого и 8 обратного криптопреобразования
-            for (int i = 0; i < 16; i++)
+            for (int i = 15; i >= 0; i--)
             {
                 DeCryptotransformation(workData, i);
                 logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));
@@ -421,7 +421,7 @@ namespace MARSCore
 
             logger.Log("reverce mixing");
             //8 раундов обратного перемешивания
-            for (int i = 0; i < 8; i++)
+            for (int i = 7; i >= 0; i--)
             {
                 DeReverseMixing(workData, i);
                 logger.Log(string.Format("{0} {1} {2} {3}", workData[0].ToString("X"), workData[1].ToString("X"), workData[2].ToString("X"), workData[3].ToString("X")));

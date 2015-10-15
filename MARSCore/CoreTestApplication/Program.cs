@@ -7,10 +7,10 @@ namespace CoreTestApplication
         static void Main(string[] args)
         {
             var marsCore = new MARSCore.MarsCryptor();
-            uint[] key = { 0x5094d03, 0x33c4b0e, 0x396f59a, 0x254fec6 };
+            uint[] key = { 0x5094d03, 0x33c4b0e, 0x396f59a, 0x254fec6, 0x48eb689, 0x12c312f, 0x20be8e5, 0x5268f58 };
             marsCore.Key = key;
 
-            uint[] data = { 0x48eb689, 0x12c312f, 0x20be8e5, 0x5268f58 };
+            uint[] data = { 0x48eb689, 0x12c312f, 0x20be8e5, 0x5268f58, 0x48eb689, 0x12c312f, 0x20be8e5, 0x5268f58 };
             var enc = marsCore.Encrypt(data);
             var dec = marsCore.Decript(enc);
 

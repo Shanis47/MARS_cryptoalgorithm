@@ -18,26 +18,26 @@
         public byte[] Encrypt(byte[] inputData)
         {
             var formattedData = FormatData(inputData);
-            var encruptedData = _cryptor.Encrypt(formattedData);
-            return ConvertToBytes(encruptedData);
+            var encryptedData = _cryptor.Encrypt(formattedData);
+            return ConvertToBytes(encryptedData);
         }
 
         public byte[] Decrypt(byte[] inputData)
         {
             var formattedData = FormatData(inputData);
-            var encruptedData = _cryptor.Decrypt(formattedData);
-            return ConvertToBytes(encruptedData);
+            var decryptedData = _cryptor.Decrypt(formattedData);
+            return ConvertToBytes(decryptedData);
         }
 
-        private byte[] ConvertToBytes(uint[] encruptedData)
+        private byte[] ConvertToBytes(uint[] data)
         {
-            var result = new byte[encruptedData.Length * 4];
-            for (int i = 0; i < encruptedData.Length; i++)
+            var result = new byte[data.Length * 4];
+            for (int i = 0; i < data.Length; i++)
             {
-                result[i*4] = (byte)(encruptedData[i] & 0xff);
-                result[i * 4 + 1] = (byte)((encruptedData[i] >> 8) & 0xff);
-                result[i * 4 + 2] = (byte)((encruptedData[i] >> 16) & 0xff);
-                result[i * 4 + 3] = (byte)((encruptedData[i] >> 24) & 0xff);
+                result[i*4 + 3] = (byte) (data[i] & 0xff);
+                result[i*4 + 2] = (byte) ((data[i] >> 8) & 0xff);
+                result[i*4 + 1] = (byte) ((data[i] >> 16) & 0xff);
+                result[i*4] = (byte) ((data[i] >> 24) & 0xff);
             }
 
             return result;

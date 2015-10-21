@@ -12,7 +12,7 @@ namespace CoreTestApplication
 
             uint[] data = { 0x48eb689, 0x12c312f, 0x20be8e5, 0x5268f58, 0x48eb689, 0x12c312f, 0x20be8e5, 0x5268f58 };
             var enc = marsCore.Encrypt(data);
-            var dec = marsCore.Decript(enc);
+            var dec = marsCore.Decrypt(enc);
 
             for(int i = 0; i < data.Length; i++)
                 Console.WriteLine(data[i]+"  " + dec[i]);

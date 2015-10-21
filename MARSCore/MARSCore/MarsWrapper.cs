@@ -17,8 +17,15 @@
 
         public byte[] Encrypt(byte[] inputData)
         {
-            uint[] formattedData = FormatData(inputData);
+            var formattedData = FormatData(inputData);
             var encruptedData = _cryptor.Encrypt(formattedData);
+            return ConvertToBytes(encruptedData);
+        }
+
+        public byte[] Decrypt(byte[] inputData)
+        {
+            var formattedData = FormatData(inputData);
+            var encruptedData = _cryptor.Decrypt(formattedData);
             return ConvertToBytes(encruptedData);
         }
 

@@ -351,7 +351,7 @@ namespace MARSCore
             workData[3] = tmp[0];
         }
 
-        public uint[] Decript(uint[] data)
+        public uint[] Decrypt(uint[] data)
         {
             var result = new uint[data.Length];
             var block = new uint[BlockSize];

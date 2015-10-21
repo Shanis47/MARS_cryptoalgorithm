@@ -4,10 +4,10 @@
     {
         private readonly MarsCryptor _cryptor;
 
-        public uint[] Key
+        public byte[] Key
         {
-            get { return _cryptor.Key; }
-            set { _cryptor.Key = value; }
+            get { return ConvertToBytes(_cryptor.Key); }
+            set { _cryptor.Key = FormatData(value); }
         }
 
         public MarsWrapper()

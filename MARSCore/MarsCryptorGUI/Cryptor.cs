@@ -33,6 +33,8 @@ namespace MarsCryptorGUI
             var passwordBytes = Encoding.ASCII.GetBytes(PasswordBox.Text);
             SHA384 sha = new SHA384Managed();
             _cryptor.Key = sha.ComputeHash(passwordBytes);
+            EncryptButton.Enabled = true;
+            DecryptButton.Enabled = false;
         }
 
         private void EncryptButton_Click(object sender, EventArgs e)
@@ -49,6 +51,8 @@ namespace MarsCryptorGUI
             {
                 output.Write(encrypted, 0, encrypted.Length);
             }
+
+            MessageBox.Show("File encrypted");
         }
 
         private void DecryptButton_Click(object sender, EventArgs e)
@@ -65,6 +69,8 @@ namespace MarsCryptorGUI
             {
                 output.Write(decrypted, 0, decrypted.Length);
             }
+
+            MessageBox.Show("File decrypted");
         }
     }
 }

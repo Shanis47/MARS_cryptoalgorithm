@@ -103,6 +103,7 @@
             // 
             // EncryptButton
             // 
+            this.EncryptButton.Enabled = false;
             this.EncryptButton.Location = new System.Drawing.Point(12, 122);
             this.EncryptButton.Name = "EncryptButton";
             this.EncryptButton.Size = new System.Drawing.Size(55, 23);
@@ -113,6 +114,7 @@
             // 
             // DecryptButton
             // 
+            this.DecryptButton.Enabled = false;
             this.DecryptButton.Location = new System.Drawing.Point(73, 122);
             this.DecryptButton.Name = "DecryptButton";
             this.DecryptButton.Size = new System.Drawing.Size(55, 23);

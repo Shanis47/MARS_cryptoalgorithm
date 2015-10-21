@@ -45,13 +45,18 @@
 
         private uint[] FormatData(byte[] inputData)
         {
-            var result = new uint[inputData.Length/4 + ((inputData.Length & 3) == 0 ? 0 : 1)];
+            var length = inputData.Length/4 + ((inputData.Length & 3) == 0 ? 0 : 1);
+            if ((length & 3) != 0)
+                length += 4 - length%4;
+
+            var inputLength = inputData.Length;
+            var result = new uint[length];
             for (int i = 0; i < result.Length; i ++)
             {
-                result[i] = inputData[i*4];
-                result[i] = (result[i] << 8) | inputData[i*4 + 1];
-                result[i] = (result[i] << 8) | inputData[i*4 + 2];
-                result[i] = (result[i] << 8) | inputData[i*4 + 3];
+                result[i] = ((i*4 < inputLength) ? inputData[i*4] : (byte) 0);
+                result[i] = (result[i] << 8) | ((i*4 + 1 < inputLength) ? inputData[i*4 + 1] : (byte) 0);
+                result[i] = (result[i] << 8) | ((i*4 + 2 < inputLength) ? inputData[i*4 + 2] : (byte) 0);
+                result[i] = (result[i] << 8) | ((i*4 + 3 < inputLength) ? inputData[i*4 + 3] : (byte) 0);
             }
 
             return result;

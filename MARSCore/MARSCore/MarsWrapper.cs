@@ -49,9 +49,9 @@
             for (int i = 0; i < result.Length; i ++)
             {
                 result[i] = inputData[i*4];
-                result[i] = (result[i] << 8) | inputData[i + 1];
-                result[i] = (result[i] << 8) | inputData[i + 2];
-                result[i] = (result[i] << 8) | inputData[i + 3];
+                result[i] = (result[i] << 8) | inputData[i*4 + 1];
+                result[i] = (result[i] << 8) | inputData[i*4 + 2];
+                result[i] = (result[i] << 8) | inputData[i*4 + 3];
             }
 
             return result;

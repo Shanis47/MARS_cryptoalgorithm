@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MARSCore", "MARSCore\MARSCore.csproj", "{B6ED279D-907C-400A-8E77-EAF6B4AFADED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreTestApplication", "CoreTestApplication\CoreTestApplication.csproj", "{ED1B7DC0-27AF-4999-A919-EC41CDE9C958}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarsCryptorGUI", "MarsCryptorGUI\MarsCryptorGUI.csproj", "{8F96F2A3-0E29-4AEC-95BB-F735FB5DB2BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +15,10 @@ Global
 		{B6ED279D-907C-400A-8E77-EAF6B4AFADED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6ED279D-907C-400A-8E77-EAF6B4AFADED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6ED279D-907C-400A-8E77-EAF6B4AFADED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ED1B7DC0-27AF-4999-A919-EC41CDE9C958}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ED1B7DC0-27AF-4999-A919-EC41CDE9C958}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ED1B7DC0-27AF-4999-A919-EC41CDE9C958}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ED1B7DC0-27AF-4999-A919-EC41CDE9C958}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F96F2A3-0E29-4AEC-95BB-F735FB5DB2BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F96F2A3-0E29-4AEC-95BB-F735FB5DB2BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F96F2A3-0E29-4AEC-95BB-F735FB5DB2BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F96F2A3-0E29-4AEC-95BB-F735FB5DB2BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
